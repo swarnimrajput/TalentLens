@@ -64,158 +64,145 @@ const ResumeUpload = ({ candidateId, onComplete, setExtractedInfo }: {
   };
 
   // IMPROVED Extract information using multiple strategies
-  const extractInformation = (text: string): ExtractedInfo => {
-    // Email regex - more comprehensive
-    const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
-    const emails = text.match(emailRegex) || [];
+// Update your extractInformation function in IntervieweeView.tsx:
+
+const extractInformation = (text: string): ExtractedInfo => {
+  // Email regex - more comprehensive
+  const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
+  const emails = text.match(emailRegex) || [];
+  
+  // Phone regex (multiple formats including Indian numbers)
+  const phoneRegex = /(\+91[-.\s]?)?\d{10}|(\+\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/g;
+  const phones = text.match(phoneRegex) || [];
+  
+  // ENHANCED Name extraction specifically for your resume format
+  const lines = text.split('\n').filter(line => line.trim());
+  let name = '';
+  
+  // Strategy 1: Look for "Swarnim Rajput" pattern specifically
+  const swarnimPattern = /Swarnim\s+Rajput/i;
+  const swarnimMatch = text.match(swarnimPattern);
+  if (swarnimMatch) {
+    name = swarnimMatch[0];
+  }
+  
+  // Strategy 2: Enhanced first line extraction (handles symbols)
+  if (!name && lines.length > 0) {
+    const firstLine = lines[0].trim();
     
-    // Phone regex (multiple formats)
-    const phoneRegex = /(\+\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}|\d{10}|(\+\d{1,3}[-.\s]?)?(\d{3}[-.\s]?\d{3}[-.\s]?\d{4})/g;
-    const phones = text.match(phoneRegex) || [];
+    // Remove common symbols and special characters that might appear after names
+    const cleanedLine = firstLine
+      .replace(/[^\w\s]/g, ' ') // Replace non-word characters with spaces
+      .replace(/\s+/g, ' ')     // Replace multiple spaces with single space
+      .trim();
     
-    // IMPROVED Name extraction with multiple strategies
-    const lines = text.split('\n').filter(line => line.trim());
-    let name = '';
+    console.log('Cleaned first line:', cleanedLine); // Debug log
     
-    // Strategy 1: Look for lines with just 2-4 capitalized words (most common)
-    for (let i = 0; i < Math.min(10, lines.length); i++) {
+    // Look for 2-3 word name pattern
+    const namePattern = /^([A-Z][a-z]+\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)$/;
+    const nameMatch = cleanedLine.match(namePattern);
+    
+    if (nameMatch) {
+      name = nameMatch[1];
+    }
+  }
+  
+  // Strategy 3: Look for name patterns in first few lines (fallback)
+  if (!name) {
+    for (let i = 0; i < Math.min(3, lines.length); i++) {
       const line = lines[i].trim();
       
-      // Skip lines that are obviously not names
-      if (line.toLowerCase().includes('resume') || 
-          line.toLowerCase().includes('curriculum') ||
-          line.toLowerCase().includes('vitae') ||
-          line.toLowerCase().includes('profile') ||
-          line.toLowerCase().includes('contact') ||
-          line.toLowerCase().includes('email') ||
-          line.toLowerCase().includes('phone') ||
-          line.toLowerCase().includes('address') ||
-          line.toLowerCase().includes('objective') ||
+      // Skip lines with URLs, emails, or obvious non-name content
+      if (line.includes('github') || 
+          line.includes('linkedin') || 
+          line.includes('@') || 
+          line.includes('http') ||
+          line.includes('.com') ||
           line.toLowerCase().includes('summary') ||
-          line.toLowerCase().includes('experience') ||
-          line.toLowerCase().includes('education') ||
-          line.toLowerCase().includes('skills') ||
-          line.includes('@') ||
-          line.match(/\d{3}/) || // Skip lines with 3+ digits
-          line.length < 5 ||
-          line.length > 50) {
+          line.toLowerCase().includes('resume')) {
         continue;
       }
       
-      // Look for 2-4 words, each starting with capital letter
-      if (line.match(/^[A-Z][a-zA-Z]+'?\s+[A-Z][a-zA-Z]+'?(\s+[A-Z][a-zA-Z]+'?)?(\s+[A-Z][a-zA-Z]+'?)?$/)) {
-        name = line;
+      // Clean the line and look for name pattern
+      const cleanedLine = line.replace(/[^\w\s]/g, ' ').replace(/\s+/g, ' ').trim();
+      
+      if (cleanedLine.match(/^[A-Z][a-z]+\s+[A-Z][a-z]+(\s+[A-Z][a-z]+)?$/) && 
+          cleanedLine.length >= 5 && 
+          cleanedLine.length <= 50) {
+        name = cleanedLine;
         break;
       }
     }
+  }
+  
+  // Strategy 4: Manual patterns for common names
+  if (!name) {
+    // Add patterns for other common name formats you might encounter
+    const manualPatterns = [
+      /([A-Z][a-z]+\s+[A-Z][a-z]+)/,
+      /^([A-Z]\w+\s+[A-Z]\w+)/m
+    ];
     
-    // Strategy 2: If no name found, look for patterns like "Name: John Doe"
-    if (!name) {
-      const namePatterns = [
-        /(?:Name|Full\s+Name|Candidate|Applicant)\s*:?\s*([A-Z][a-zA-Z]+'?\s+[A-Z][a-zA-Z]+'?(?:\s+[A-Z][a-zA-Z]+'?)*)/i,
-        /^([A-Z][a-z]+\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)$/m
-      ];
-      
-      for (const pattern of namePatterns) {
-        const nameMatch = text.match(pattern);
-        if (nameMatch && nameMatch[1]) {
-          name = nameMatch[1].trim();
-          break;
-        }
+    for (const pattern of manualPatterns) {
+      const match = text.match(pattern);
+      if (match && !match[1].toLowerCase().includes('university') && 
+          !match[1].toLowerCase().includes('college') &&
+          !match[1].toLowerCase().includes('company')) {
+        name = match[1];
+        break;
       }
     }
-    
-    // Strategy 3: Look in first few lines for name-like patterns
-    if (!name) {
-      for (let i = 0; i < Math.min(5, lines.length); i++) {
-        const line = lines[i].trim();
-        
-        // Check if it's likely a name
-        if (line.length >= 5 && 
-            line.length <= 40 && 
-            line.split(' ').length >= 2 && 
-            line.split(' ').length <= 4 &&
-            !line.includes('@') && 
-            !line.match(/\d{2}/) && // No 2+ consecutive digits
-            !line.toLowerCase().includes('resume') &&
-            !line.toLowerCase().includes('cv') &&
-            line.match(/^[A-Z]/)) {
-          
-          const words = line.split(' ').filter(word => word.length > 0);
-          const isLikelyName = words.length >= 2 && words.every(word => 
-            word.length >= 2 && 
-            word[0].match(/[A-Z]/) && 
-            word.slice(1).match(/^[a-zA-Z']*$/) &&
-            !['Resume', 'CV', 'Profile', 'Contact', 'Email', 'Phone'].includes(word)
-          );
-          
-          if (isLikelyName) {
-            name = line;
-            break;
-          }
-        }
-      }
-    }
-    
-    // Strategy 4: Look for centered text (often names)
-    if (!name) {
-      const potentialNames = lines.filter(line => {
-        const trimmed = line.trim();
-        return trimmed.length >= 5 &&
-               trimmed.length <= 40 &&
-               trimmed.split(' ').length >= 2 &&
-               trimmed.split(' ').length <= 4 &&
-               !trimmed.includes('@') &&
-               !trimmed.match(/\d/) &&
-               trimmed.match(/^[A-Z][a-z]+\s+[A-Z]/);
-      });
-      
-      if (potentialNames.length > 0) {
-        name = potentialNames[0].trim();
-      }
-    }
+  }
 
-    // Extract skills (enhanced list)
-    const skillsRegex = /\b(React|ReactJS|JavaScript|TypeScript|Node\.?js|Python|Java|HTML5?|CSS3?|SCSS|Sass|SQL|NoSQL|MongoDB|PostgreSQL|MySQL|AWS|Azure|GCP|Docker|Kubernetes|Git|GitHub|GitLab|Angular|Vue\.?js|Express|Django|Flask|Spring|Bootstrap|Tailwind|Redux|GraphQL|REST|API|JSON|XML|PHP|C\+\+|C#|Ruby|Go|Rust|Swift|Kotlin|Android|iOS|Flutter|React\s+Native|Jenkins|CI\/CD|Agile|Scrum|Linux|Unix|Webpack|Babel|npm|yarn|Jest|Cypress|Selenium|Firebase|Heroku|Vercel|Netlify|Figma|Sketch|Adobe|Photoshop)\b/gi;
-    const skillsMatches = text.match(skillsRegex) || [];
-    const skills = [...new Set(skillsMatches.map(skill => skill.toLowerCase()))].map(skill => {
-      const skillMap: { [key: string]: string } = {
-        'javascript': 'JavaScript',
-        'typescript': 'TypeScript',
-        'reactjs': 'React',
-        'react': 'React',
-        'react native': 'React Native',
-        'nodejs': 'Node.js',
-        'node.js': 'Node.js',
-        'vuejs': 'Vue.js',
-        'vue.js': 'Vue.js',
-        'html5': 'HTML5',
-        'css3': 'CSS3',
-        'mongodb': 'MongoDB',
-        'postgresql': 'PostgreSQL',
-        'mysql': 'MySQL',
-        'graphql': 'GraphQL',
-        'rest': 'REST API',
-        'api': 'API',
-        'json': 'JSON',
-        'xml': 'XML',
-        'aws': 'AWS',
-        'gcp': 'GCP',
-        'github': 'GitHub',
-        'gitlab': 'GitLab',
-        'ci/cd': 'CI/CD'
-      };
-      return skillMap[skill] || skill.charAt(0).toUpperCase() + skill.slice(1);
-    });
+  // Debug logging
+  console.log('=== NAME EXTRACTION DEBUG ===');
+  console.log('First few lines:', lines.slice(0, 3));
+  console.log('Extracted name:', name);
+  console.log('Email found:', emails[0]);
+  console.log('Phone found:', phones[0]);
 
-    return {
-      name: name || null,
-      email: emails[0] || null,
-      phone: phones[0] || null,
-      skills: skills.slice(0, 15),
-      fullText: text
+  // Extract skills (your existing logic)
+  const skillsRegex = /\b(React|ReactJS|JavaScript|TypeScript|Node\.?js|Python|Java|HTML5?|CSS3?|SCSS|Sass|SQL|NoSQL|MongoDB|PostgreSQL|MySQL|Flask|Docker|Git|GitHub|Redux|Express|Tailwind|Material-?UI|REST|API|JWT|Mongoose|Firebase|Postman|VS Code|OSPF|BGP|MPLS|Cisco|TextFSM|Linux|TensorFlow|OpenAI|GPT|NLP|Machine Learning|Automation|Microservices|Agile|SDLC|Shell Scripting)\b/gi;
+  const skillsMatches = text.match(skillsRegex) || [];
+  const skills = [...new Set(skillsMatches.map(skill => skill.toLowerCase()))].map(skill => {
+    const skillMap: { [key: string]: string } = {
+      'javascript': 'JavaScript',
+      'typescript': 'TypeScript',
+      'reactjs': 'React',
+      'react': 'React',
+      'nodejs': 'Node.js',
+      'node.js': 'Node.js',
+      'mongodb': 'MongoDB',
+      'postgresql': 'PostgreSQL',
+      'mysql': 'MySQL',
+      'github': 'GitHub',
+      'material-ui': 'Material-UI',
+      'materialui': 'Material-UI',
+      'rest': 'REST API',
+      'api': 'API',
+      'jwt': 'JWT',
+      'vs code': 'VS Code',
+      'ospf': 'OSPF',
+      'bgp': 'BGP',
+      'mpls': 'MPLS',
+      'textfsm': 'TextFSM',
+      'tensorflow': 'TensorFlow',
+      'openai': 'OpenAI',
+      'gpt': 'GPT',
+      'nlp': 'NLP',
+      'sdlc': 'SDLC'
     };
+    return skillMap[skill] || skill.charAt(0).toUpperCase() + skill.slice(1);
+  });
+
+  return {
+    name: name || null,
+    email: emails[0] || null,
+    phone: phones[0] || null,
+    skills: skills.slice(0, 15),
+    fullText: text
   };
+};
 
   const handleFile = async (file: File) => {
     const fileExtension = file.name.split('.').pop()?.toLowerCase();
