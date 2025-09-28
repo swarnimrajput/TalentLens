@@ -1,7 +1,7 @@
 // src/components/UI/interview/WelcomeBackModal.tsx
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../card';
-import { Button } from '../button';
+import { Button } from '../UI/button';
 import { CheckCircle, Clock, Play } from 'lucide-react';
 
 interface WelcomeBackModalProps {

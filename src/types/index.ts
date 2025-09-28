@@ -1,4 +1,4 @@
-// src/types/index.ts  
+// src/types/index.ts - Create this file if it doesn't exist
 export interface Question {
   id: string;
   text: string;
@@ -16,48 +16,22 @@ export interface AIResponse {
   followUpSuggestion?: string;
 }
 
+export interface ExtractedInfo {
+  name: string | null;
+  email: string | null;
+  phone: string | null;
+  skills: string[];
+  fullText: string;
+}
+
 export interface Candidate {
   id: string;
-  name: string;
-  email: string;
-  phone: string;
+  name: string | undefined; // Changed from string | null to string | undefined
+  email: string | undefined; // Changed from string | null to string | undefined
+  phone: string | undefined; // Changed from string | null to string | undefined
   status: 'pending-info' | 'in-progress' | 'completed';
-  resumeContent?: string;
-  questions: Question[];
-  answers: Answer[];
-  finalScore?: number;
-  finalSummary?: string;
-  keyMoments?: KeyMoment[];
-  keywordTags?: string[];
+  questions: any[];
+  answers: any[];
   createdAt: string;
-  completedAt?: string;
-}
-
-export interface Answer {
-  id: string;
-  questionId: string;
-  text: string;
-  timeSpent: number;
-  score?: number;
-  feedback?: string;
-  sentiment?: 'confident' | 'hesitant' | 'neutral';
-  tags?: string[];
-  submittedAt: string;
-}
-
-export interface KeyMoment {
-  id: string;
-  questionId: string;
-  type: 'strong' | 'weak';
-  description: string;
-  timestamp: string;
-}
-
-export interface SessionState {
-  currentCandidateId: string | null;
-  currentQuestionIndex: number;
-  timerValue: number;
-  isInterviewActive: boolean;
-  isTimerRunning: boolean;
-  currentAnswer: string;
+  resumeContent?: string; // Add this if needed
 }

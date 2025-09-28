@@ -1,7 +1,7 @@
 // src/components/ui/ApiKeyConfig.tsx
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "./card";
-import { Button } from "./button";
+import { Button } from "./interview/UI/button";
 import { Input } from "./input";
 import { Settings, Key, CheckCircle, AlertCircle, Sparkles } from "lucide-react";
 

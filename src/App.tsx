@@ -1,9 +1,9 @@
-// src/App.tsx - UPDATE THE INTERVIEWER DASHBOARD
+// src/App.tsx - Complete Fixed Version
 import { useState, useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './store';
-import IntervieweeView from './components/UI/interview/IntervieweeView';
+import IntervieweeView from './components/interview/IntervieweeView';
 import { Users, User, Cpu, Sparkles, CheckCircle2, Target, Calendar, Eye } from 'lucide-react';
 
 // Enhanced InterviewerDashboard Component
@@ -74,7 +74,7 @@ const InterviewerDashboard = () => {
           <div>
             <h3 className="text-lg font-semibold mb-3">AI Assessment</h3>
             <div className="bg-gray-50 rounded-lg p-4">
-              <p className="text-gray-800">{candidate.summary}</p>
+              <p className="text-gray-800">{candidate.aiSummary || candidate.summary}</p>
             </div>
           </div>
 
@@ -121,8 +121,8 @@ const InterviewerDashboard = () => {
                       {moment.type === 'strong' ? '✓' : '!'}
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">{moment.question}</p>
-                      <p className="text-sm text-gray-600">{moment.description}</p>
+                      <p className="font-medium text-gray-900">{moment.description}</p>
+                      <p className="text-sm text-gray-600">{moment.question || ''}</p>
                     </div>
                   </div>
                 ))}
@@ -310,11 +310,11 @@ const InnerApp = () => {
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    AI Interview Assistant
+                    TalentLens
                   </h1>
                   <p className="text-sm text-gray-600 flex items-center gap-1">
                     <Sparkles className="w-3 h-3" />
-                    Powered by Google Gemini API
+                    AI-Powered Interview Platform
                   </p>
                 </div>
               </div>
@@ -376,7 +376,7 @@ function App() {
               <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center mx-auto animate-pulse">
                 <Cpu className="w-8 h-8 text-white" />
               </div>
-              <p className="text-gray-600">Loading AI Interview Assistant...</p>
+              <p className="text-gray-600">Loading TalentLens...</p>
             </div>
           </div>
         } 

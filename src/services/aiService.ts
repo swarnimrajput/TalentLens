@@ -1,5 +1,5 @@
-// src/services/aiService.ts
-import { GoogleGenerativeAI, GenerativeModel, GenerationConfig, SafetySetting } from '@google/generative-ai';
+import { GoogleGenerativeAI, GenerativeModel } from '@google/generative-ai';
+import type { GenerationConfig, SafetySetting } from '@google/generative-ai';
 import type { Question, AIResponse } from '../types';
 import { GEMINI_CONFIG } from '../config/gemini';
 

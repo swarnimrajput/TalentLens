@@ -1,9 +1,9 @@
 // src/components/UI/interview/Chatbot.tsx
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { updateCandidateInfo } from '../../../store/slices/candidatesSlice';
+import { updateCandidateInfo } from '../../store/slices/candidatesSlice';
 import { Card, CardContent, CardHeader, CardTitle } from '../card';
-import { Button } from '../button';
+import { Button } from '../UI/button';
 import { MessageCircle, Send } from 'lucide-react';
 
 interface ChatbotProps {

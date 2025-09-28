@@ -1,11 +1,11 @@
 // src/components/interview/ResumeUpload.tsx
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { Button } from '../button';
-import { Card, CardContent, CardHeader, CardTitle } from '../card';
-import { parseResume } from '../../../utils/resumeParser';
-import { AIService } from '../../../services/aiService';
-import { updateCandidateInfo } from '../../../store/slices/candidatesSlice';
+import { Button } from '../UI/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../UI/card';
+import { parseResume } from '../../utils/resumeParser';
+import { AIService } from '../../services/aiService';
+import { updateCandidateInfo } from '../../store/slices/candidatesSlice';
 import { 
   Upload, 
   FileText, 
