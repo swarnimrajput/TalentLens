@@ -1,4 +1,4 @@
-// src/types/index.ts - Create this file if it doesn't exist
+// src/types/index.ts - Create this file with proper types
 export interface Question {
   id: string;
   text: string;
@@ -26,12 +26,12 @@ export interface ExtractedInfo {
 
 export interface Candidate {
   id: string;
-  name: string | undefined; // Changed from string | null to string | undefined
-  email: string | undefined; // Changed from string | null to string | undefined
-  phone: string | undefined; // Changed from string | null to string | undefined
+  name: string | undefined;  // Use undefined instead of null
+  email: string | undefined;
+  phone: string | undefined;
   status: 'pending-info' | 'in-progress' | 'completed';
   questions: any[];
   answers: any[];
   createdAt: string;
-  resumeContent?: string; // Add this if needed
+  resumeContent?: string;
 }

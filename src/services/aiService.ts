@@ -631,7 +631,7 @@ SUMMARY REQUIREMENTS:
         const score = Math.min(100, Math.max(0, parseInt(parsed.score) || 50));
         const validSentiments = ['confident', 'hesitant', 'neutral'];
         const sentiment = validSentiments.includes(parsed.sentiment) ? parsed.sentiment : 'neutral';
-        const tags = Array.isArray(parsed.tags) ? parsed.tags.filter(tag => typeof tag === 'string') : [];
+        const tags = Array.isArray(parsed.tags) ? parsed.tags.filter((tag: unknown) => typeof tag === 'string') : [];
         const feedback = typeof parsed.feedback === 'string' ? parsed.feedback : 'AI evaluation completed';
         
         return {
@@ -684,7 +684,7 @@ SUMMARY REQUIREMENTS:
         
         const score = Math.min(100, Math.max(0, parseInt(parsed.score) || 50));
         const summary = typeof parsed.summary === 'string' ? parsed.summary : 'Interview assessment completed successfully.';
-        const keyMoments = Array.isArray(parsed.keyMoments) ? parsed.keyMoments.map(moment => ({
+        const keyMoments = Array.isArray(parsed.keyMoments) ? parsed.keyMoments.map((moment: any) => ({
           id: moment.id || `km-${Date.now()}`,
           questionId: moment.questionId || '',
           type: ['strong', 'weak'].includes(moment.type) ? moment.type : 'neutral',

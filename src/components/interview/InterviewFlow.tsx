@@ -1,4 +1,3 @@
-// src/components/interview/InterviewFlow.tsx - Use the standalone version
 import { useState, useEffect } from 'react';
 import { 
   Brain,
@@ -13,7 +12,6 @@ import {
   Zap
 } from 'lucide-react';
 import { AIService } from '../../services/aiService';
-
 // Interface for extracted information
 interface ExtractedInfo {
   name: string | null;
